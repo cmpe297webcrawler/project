@@ -35,5 +35,5 @@
 # skip URLs with slash-delimited segment that repeats 3+ times, to break loops
 -.*(/[^/]+)/[^/]+\1/[^/]+\1/
 
-# accept anything else
-+.
+# accept craigslist.org only
++^http://([a-z0-9]*\.)*craigslist.org/
