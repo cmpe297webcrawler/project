@@ -1,0 +1,2 @@
+require './crawlerServer'
+run CRAWLERSERVER.new(4500)
