@@ -1,0 +1,35 @@
+goto your working directory
+
+$ git config -l
+>>
+user.email=xia38832@yahoo.com
+user.name=Chunyang Xia
+github.user=Chunyang Xia
+
+$git init
+
+$ git clone git://github.com/cmpe297webcrawler/project.git
+>>
+Initialized empty Git repository in /home/cxia/Documents/cmpe297/project1/project/.git/
+remote: Counting objects: 25, done.
+remote: Compressing objects: 100% (13/13), done.
+remote: Total 25 (delta 2), reused 25 (delta 2)
+Receiving objects: 100% (25/25), 79.14 KiB, done.
+Resolving deltas: 100% (2/2), done.
+
+$ ls
+>>
+project
+
+$ git fetch
+
+$ git add xxxxxx
+
+$ git commit -m "xxxxxx"
+
+$ git push origin 
+
+$ git fsck 	<------ check status of git for any error
+
+
+

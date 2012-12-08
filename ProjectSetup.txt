@@ -1,0 +1,38 @@
+Project Setup:
+
+install apache-nutch 2.0
+install apache-solr 4.0
+
+install mongodb 2.2.1
+./bin/mongod  		// will start mongodb at port 27017 for persistance
+
+yum install ruby	// installed latest ruby 1.9.3, use RVM (ruby version manager) 1.16.19 if needed
+ruby -v
+
+yum install libyaml
+
+install rails		// 3.2.8
+
+yum install rubygems	// install ruby gems 1.8.24
+gem -v
+
+gem install sinatra	// gem install sinatra 1.3.3
+
+gem install mongoid	// 3.0.11
+gem install haml	// 3.1.7
+gem install shotgun	// 0.9 on window, use sinatra/reload
+gem install nestful	// rest client
+gem install rest-client // rest client
+
+// may need these install command
+yum install -y gcc-c++ patch readline readline-devel zlib zlib-devel libyaml-devel libffi-devel openssl-devel make bzip2 autoconf automake libtool bison iconv-devel
+
+rvm reinstall 1.9.3
+
+// rubygems is included in 1.9.3
+
+run command
+shotgun for easy testing 
+shotgun -p port crawlerServer.rb	// cannot use sinatra::base
+
+. run.sh	// this use rackup service, but need to rerun the command everytime after change

@@ -1,0 +1,25 @@
+Start Mongodb //may need to be root due to installed by root id
+$./bin/mongod
+>>
+MongoDB starting : pid=1367 port=27017 dbpath=/data/db/ 64-bit host=oc6831665801.ibm.com
+db version v2.2.1, pdfile version 4.5
+
+Start Mongodb command line
+$./bin/mongo
+> show dbs		<----------- show all database
+
+> use db_name
+
+> db.dropDatabase()  	<----------- drop current database
+
+> show collections     	<----------- show all collections under current database
+
+> db.db_name.collection_name.find()	<---- show all the data under the colloection
+
+> db.db_name.collection_name.drop()    	<---- drop the collection
+
+> db.db_name.collection_name.remove()  	<---- remove all objects from the collection
+
+
+
+
