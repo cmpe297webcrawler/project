@@ -3,11 +3,12 @@
   %head
     %meta{:'http-equiv' => 'Content-Type', :content => 'text/html;charset=ISO-8859-1' }
     %style
-    %title InCould Crawler
     %script{ :type => "text/javascript", :src => 'jquery-1.7.1.js'}
     :javascript
       /*function passed to jquery bound to document ready event*/
       $(function() {
+        
+
         /* Declare admin form */
         var userform = $("#user_form");
         /* Set click event for input user and urls */
@@ -35,19 +36,26 @@
         
       });
 
-  %body{ :id =>'body'}
-    %h1 Welcome to InCloud Crawler Homepage
-    %br
-    %br
-    %form{ :id => "user_form"}
-      %section{ :id => "fields"}
-        %label{ :for => "user"}User Name: 
-        %input{ :type => "text", :name => "user", :id => "user", :maxlength => 60, :size => 60, :required => true}
-        %br
-        %br
-        %label{ :for => "url"}Urls to Crawl: 
-        %textarea{ :type => "url", :name => "urls", :id => "urls", :row => 10, :cols => 65, :required => true}
-      %section{ :id => "buttons"}
-        %br
-        %br
-        %button{ :type => "button", :id => "Submit"}Submit
+  %body
+    %h2 Welcome #{@user}!
+      %table{:border => "1"}
+        %tr
+          %th= "Url To Crawl"
+          %th= "Is Crawl Send"
+          %th= "Remote Crawler Site"
+          %th= "Is Crawl Done"
+          %th= "Collection"
+        - @userCrawaled.each do |crawled|
+          %tr
+            %td= crawled.urlToCrawl
+            %td= crawled.isSend
+            %td= crawled.remoteService
+            %td= crawled.isDone
+            %td= crawled.collection
+        - @userCrawlNeeds.each do |crawl|
+          %tr
+            %td= crawl.urlToCrawl
+            %td= crawl.isSend
+            %td= crawl.remoteService
+            %td= crawl.isDone
+            %td= crawl.collection
