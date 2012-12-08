@@ -8,5 +8,5 @@ key = "apple"
 
 rdata = JSON.generate({:collection=>collection,:user=>user,:key=>key})
 puts rdata
-response = RestClient.put "localhost:4567/search",rdata, {:content_type=>:json, :accept=>:json}
+response = RestClient.put "localhost:4567/nutch/search",rdata, {:content_type=>:json, :accept=>:json}
 puts response

@@ -1,8 +1,10 @@
 require 'sinatra'
+require 'net/http'
 require 'json'
 require 'mongo'
 require 'socket'
 require 'rest-client'
+require 'rsolr'
 include Mongo
 
 post '/nutch' do
@@ -40,8 +42,8 @@ post '/nutch' do
     File.open('conf/reg-urlfilter').each do |line|
       f.puts line
     end
-    #f.puts "+^http://([a-z0-9]*\\.)*" + addr.gsub('www.', '').strip
-    f.puts "+." 
+    f.puts "+^http://([a-z0-9]*\\.)*" + addr.gsub('www.', '').strip
+    #f.puts "+." 
   end
    
   system("export JAVA_HOME=/home/sysadm/jdk1.7.0_09")  
@@ -50,22 +52,27 @@ post '/nutch' do
   cmdstr = "bin/nutch crawl urls -dir user-data/" + id + " -depth 3 -topN 5"
   #cmdstr = "bin/nutch crawl urls -dir user-data/bob -solr http://localhost:8983/solr/ -depth 3 -topN 5"
  
+  Thread.new{
   #run the nutch command
   system(cmdstr + " > " + "./user-data/" + id + "/" + id + ".out")
   #system(cmdstr + " > " + id + ".out")
 
   #TO-DO: analyze console output to see if nutch job is successful
   
+  puts "nutch done"
 
   #request solar service
-  rdata = JSON.generate({:ip=>local_ip,:user=>id,:url=>addr})
-  response = RestClient.post "localhost:4567/solrQuery",rdata, {:content_type=>:json, :accept=>:json}  
+  #rdata = JSON.generate({:ip=>local_ip,:user=>id,:url=>addr})
+  #response = RestClient.post "localhost:4567/solrQuery",rdata, {:content_type=>:json, :accept=>:json}  
+  crawlHome = " user-data/" + id
+  system("bin/nutch solrindex " + "127.0.0.1:8983" + crawlHome +  "/crawldb -linkdb " + crawlHome + "/linkdb " + crawlHome + "/  segments/* > "+ id+".idxout")
 
+  }
 
   col = "collection-1"
   #make a rest call to requester to signal job finished
   rdata = JSON.generate({:ip=>local_ip,:user=>id,:url=>addr,:collection=>col})
-  response = RestClient.post "#{request.ip}:4567/crawlupdate",rdata, {:content_type=>:json, :accept=>:json}
+  response = RestClient.post "#{request.ip}:4568/crawlupdate",rdata, {:content_type=>:json, :accept=>:json}
 
 
   #everything is good, remove log entry
@@ -74,6 +81,26 @@ post '/nutch' do
   #construct a http response back to requester
   "success"
 
+end
+
+put '/nutch/search/?' do
+  
+  # Parse parameters
+  content_type :json
+  puts "Search service (starting)"
+  data = JSON.parse request.body.read
+  puts data.to_json
+  
+  user = data['user']
+  collection = data['collection']
+  key = data['keys']
+
+  puts "Search service (Connecting to SOLR)"
+  solr = RSolr.connect :url => 'http://localhost:8983/solr'
+  # send a request to /select
+  puts "Search service (Sending Request)"
+  response = solr.get 'select', :params => {:q=>key, :wt => :json}
+    
 end
 
 #testing services
@@ -98,7 +125,7 @@ end
 
 # By George 
 post '/solrQuery' do
- #puts JSON.parse request.body.read
+ puts " do solr"
  data = JSON.parse( request.body.read)
  # index the crawlDB with Solr
  host = "127.0.0.1"

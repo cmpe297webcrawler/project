@@ -13,16 +13,16 @@ require 'rest_client'
 system("mkdir ./user-data/")
 
 #start solr service
-system("../apache-solr-4.0.0/example/java -jar start.jar")
+#system("java -jar /home/sysadm/apache-solr-4.0.0/example/start.jar")
 
 #TO-DO: recovery from last job if there is one
 
 
 # ping controller to register this nutch/solr service node
 local_ip = UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last}
-ip ="9.55.137.182"
-port = "4567"
-addr = "http://" + local_ip + ":" + port + "/nutch"
+ip ="localhost"
+port = "4568"
+addr = "http://" + local_ip + ":4567/nutch"
 url = JSON.generate({:url=>addr})
 response = RestClient.put "#{ip}:#{port}/CrawlerServices",url, {:content_type=>:json, :accept=>:json}
 
