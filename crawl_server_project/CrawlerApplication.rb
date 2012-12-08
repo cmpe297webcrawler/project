@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'mongo_mapper'
 require 'haml'
 require 'nestful'
+require 'rest_client'
 require 'json'
 
 class CrawlerApplication < Sinatra::Base
@@ -26,6 +27,7 @@ class CrawlerApplication < Sinatra::Base
       key :service, String, :required => true
       key :url, String, :required => true
       key :inUse, Boolean, :default => false
+      
   end
   
   RemoteServicesSite.ensure_index [[:url, 1]], :unique => true
@@ -123,6 +125,27 @@ put '/crawl/?' do
     UserInfo.create!({:user=>user, :remoteService=>service.url, :urlToCrawl=>url}).save
   end 
   puts "Adding user's crawl urls (complete)"
+end
+
+get '/search/:user' do
+  @user = params[:user]
+  @userCrawaled = getAllSendUserCrawlerUrl(@user)
+  haml:search
+end
+
+put '/search/result/?' do
+  content_type :json
+  puts "Search result service (starting)"
+  data = JSON.parse request.body.read
+  puts data.to_json
+  remoteServiceUrl = UserInfo.where(:user => date['user'], :collection => data['collection'])
+  if remoteServiceUrl.nil? || remoteServiceUrl.empty?
+    halt 401, "No user and collection exist on server, go away!"
+  end
+  puts "Calling a remote search url (starting)"
+  response = RestClient.put remoteServiceUrl.first().remoteService+"/search", data.to_json, {:content_type => :json, :accept => :json}
+  return response.to_json
+  puts "search result service (complete)"
 end
 
 #**********************************************************************
