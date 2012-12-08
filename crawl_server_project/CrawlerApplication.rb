@@ -36,6 +36,7 @@ class CrawlerApplication < Sinatra::Base
       key :remoteService, String, :required => true
       key :urlToCrawl, String, :required => true
       key :isDone, Boolean, :default => false
+      key :isSend, Boolean, :default => false
       key :collection, String
   end
 
@@ -49,11 +50,25 @@ helpers do
     RemoteServicesSite.where(:service => "crawler")
   end
   
-  # return first non inuse crawler service
-  def getFirstNonInUseCrawlerServices
-    RemoteServicesSite.first(:service => "crawler", :inUse => false)
+  # return non inuse crawler services
+  def getNonInUseCrawlerServices
+    RemoteServicesSite.where(:service => "crawler", :inUse => false)
   end
 
+  # return first non inuse crawler service
+  def getFirstNonInUseCrawlerService
+    RemoteServicesSite.where(:service => "crawler", :inUse => false).first()
+  end
+  
+  # return all user's unsent crawler url
+  def getAllUnSendUserCrawlerUrl userid
+    UserInfo.where(:user=>userid, :isSend=>false)
+  end
+
+  # return all user's send crawler url
+  def getAllSendUserCrawlerUrl userid
+    UserInfo.where(:user=>userid, :isSend=>true)
+  end
 end
 
 #**********************************************************************
@@ -66,8 +81,48 @@ get '/' do
   haml :homepage
 end
 
-get '/crawl' do
-  "Hello, my friends!"
+get '/crawl/:user' do
+  @user = params[:user]
+  @userCrawaled = getAllSendUserCrawlerUrl(@user)
+  @userCrawlNeeds = getAllUnSendUserCrawlerUrl(@user)
+  @userCrawlNeeds.each do |need|
+    #Post /call remote service for remote crawler url
+    puts "Calling a remote crawler url (starting)"
+    input = JSON.generate({:url => need.urlToCrawl, :user => need.user})
+    response = RestClient.post need.remoteService, input, {:content_type => :json, :accept => :json}
+    # process response
+    need.set(:isSend => true)
+    puts "Calling a remote crawler url (complete)"
+  end
+  haml:crawl
+end
+
+put '/crawl/?' do
+  content_type :json
+  puts "Adding user's crawl urls (starting)"
+  data = JSON.parse request.body.read
+  puts data.to_json
+  user = data['user']
+  puts user
+  urls = data['urls']
+  puts urls
+  urlArray = urls.split(", ")
+  # get the all non inuse crawl service, return a query object
+  remoteServices = getNonInUseCrawlerServices
+  puts remoteServices.count
+  if remoteServices.count == 0 || remoteServices.count != urlArray.size
+    halt 401, "Not enough free remote crawler sites!, go away!"
+  end
+  urlArray.each do |url|
+    service = getFirstNonInUseCrawlerService
+    #remoteServices.first().set(:inUse=>true)
+    if service.nil?
+      halt 401, "no more free remote crawler site!, go away!"
+    end
+    service.set(:inUse=>true)
+    UserInfo.create!({:user=>user, :remoteService=>service.url, :urlToCrawl=>url}).save
+  end 
+  puts "Adding user's crawl urls (complete)"
 end
 
 #**********************************************************************
@@ -103,7 +158,8 @@ put '/CrawlerServices/?' do
   puts "Adding remote crawler service (complete)"
 end
 
-post '/CrawlerServices/?' do
+# called by remote crawler after completing the crawl/solr task
+post '/crawlupdate/?' do
   content_type :json
   puts "Updating remote crawler service (starting)"
   data = JSON.parse request.body.read
@@ -112,10 +168,12 @@ post '/CrawlerServices/?' do
   if remoteCrawlerUrl.nil? || remoteCrawlerUrl.empty?
     halt 401, "unknow crawler remote url:#{data['url']}, go away!"
   end
-  if 
-    RemoteServicesSite.create!({:service => "crawler", :url => data['url']}).save
+  userInfo = UserInfo.where(:user => data['user'], :remoteService => data['ip'], :urlToCrawl => data['url'])
+  if userInfo.nil? || userInfo.empty?
+    halt 401, "user:#{data['user']}, crawler service url:#{data['ip']}, url to crawl:#{data['url']} do not exit, go away!"
   end
-  return getKnownCrawlerServices.to_json
+  userInfo.set!(:isDone => true, :collection => data['collection']).save
+  return success
   puts "Updating remote crawler service (complete)"
 end
 
