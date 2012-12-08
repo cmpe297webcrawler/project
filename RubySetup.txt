@@ -1,0 +1,98 @@
+RVM install, see https://rvm.io/rvm/install/
+make sure you are not running root, use single-user install
+
+$ rvm list known
+>>
+# MRI Rubies
+[ruby-]1.8.6[-p420]
+[ruby-]1.8.7-p370
+[ruby-]1.8.7[-p371]
+[ruby-]1.9.1[-p431]
+[ruby-]1.9.2-p180
+[ruby-]1.9.2-p290
+[ruby-]1.9.2-p318
+[ruby-]1.9.2[-p320]
+[ruby-]1.9.2-head
+[ruby-]1.9.3-preview1
+[ruby-]1.9.3-rc1
+[ruby-]1.9.3-p0
+[ruby-]1.9.3-p125
+[ruby-]1.9.3-p194
+[ruby-]1.9.3-p286
+[ruby-]1.9.3-[p327]
+[ruby-]1.9.3-head
+[ruby-]2.0.0-preview1
+
+$ rvm install 1.9.3
+>>
+No binary rubies available for: downloads/ruby-1.9.3-p327.
+Continuing with compilation. Please read 'rvm mount' to get more information on binary rubies.
+Installing Ruby from source to: /home/cxia/.rvm/rubies/ruby-1.9.3-p327, this may take a while depending on your cpu(s)...
+ruby-1.9.3-p327 - #downloading ruby-1.9.3-p327, this may take a while depending on your connection...
+ruby-1.9.3-p327 - #extracting ruby-1.9.3-p327 to /home/cxia/.rvm/src/ruby-1.9.3-p327
+ruby-1.9.3-p327 - #extracted to /home/cxia/.rvm/src/ruby-1.9.3-p327
+ruby-1.9.3-p327 - #configuring
+ruby-1.9.3-p327 - #compiling
+ruby-1.9.3-p327 - #installing 
+Removing old Rubygems files...
+Installing rubygems-1.8.24 for ruby-1.9.3-p327 ...
+Installation of rubygems completed successfully.
+Saving wrappers to '/home/cxia/.rvm/bin'.
+ruby-1.9.3-p327 - #adjusting #shebangs for (gem irb erb ri rdoc testrb rake).
+ruby-1.9.3-p327 - #importing default gemsets (/home/cxia/.rvm/gemsets/), this may take time ...
+Install of ruby-1.9.3-p327 - #complete 
+
+$ rvm use 1.9.3  			<--------- Always use this before every new terminal
+>>
+Using /home/cxia/.rvm/gems/ruby-1.9.3-p327
+
+$ gem --version
+>>
+1.8.24
+
+$ gem install sinatra
+>>
+Successfully installed rack-1.4.1
+Successfully installed rack-protection-1.2.0
+Successfully installed tilt-1.3.3
+Successfully installed sinatra-1.3.3
+
+$ gem install haml
+>>
+Successfully installed haml-3.1.7
+
+$ gem install mongo_mapper
+>>
+Successfully installed i18n-0.6.1
+Successfully installed multi_json-1.4.0
+Successfully installed activesupport-3.2.9
+Successfully installed builder-3.0.4
+Successfully installed activemodel-3.2.9
+Successfully installed bson-1.8.0
+Successfully installed mongo-1.8.0
+Successfully installed plucky-0.5.2
+Successfully installed mongo_mapper-0.12.0
+
+$ gem install bson_ext
+>>
+Successfully installed bson_ext-1.8.0
+
+$ gem install shotgun               	<--- used for reload simple app during development, shotgun sample.rb or shotgun config.ru
+>>
+Successfully installed shotgun-0.9
+
+$ gem install nestful
+>>
+Successfully installed nestful-0.0.8
+
+$ gem install rest-client
+>>
+Successfully installed mime-types-1.19
+Successfully installed rest-client-1.6.7
+
+$ gem install json
+Successfully installed json-1.7.5
+
+
+
+
