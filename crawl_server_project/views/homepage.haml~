@@ -16,19 +16,21 @@
           
           var user = $("#user").val();
           var urls = $("#urls").val();
+          var jsonString = '{"user":"'+user+'","urls":"'+urls+'"}'
+          var userUrl = "/crawl/"+user
 
            /*
            * Put Crawl Request
            */
-          $.ajax(
-            {
+          $.ajax({
               type: "PUT",
               url: "/crawl", 
-              data: userform.serialize(),
+              data: jsonString,
+              contentType: "application/json; charset=utf-8",
               datatype: "json"
           });
           
-          window.location.href = "/crawl"
+          window.location.href = userUrl
         });
         
       });
@@ -44,7 +46,7 @@
         %br
         %br
         %label{ :for => "url"}Urls to Crawl: 
-        %textarea{ :type => "url", :name => "url", :id => "url", :row => 10, :cols => 65, :required => true}
+        %textarea{ :type => "url", :name => "urls", :id => "urls", :row => 10, :cols => 65, :required => true}
       %section{ :id => "buttons"}
         %br
         %br

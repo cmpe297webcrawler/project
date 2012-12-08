@@ -1,0 +1,65 @@
+!!! 5
+%html 
+  %head
+    %meta{:'http-equiv' => 'Content-Type', :content => 'text/html;charset=ISO-8859-1' }
+    %style
+    %script{ :type => "text/javascript", :src => 'jquery-1.7.1.js'}
+    :javascript
+      /*function passed to jquery bound to document ready event*/
+      $(function() {
+        
+        /* Declare admin form */
+        var queryform = $("#query_form");
+        /* Set click event for input query keys */
+        queryform.find("#Submit").click(function(e) {
+          e.preventDefault();
+          
+          var keys = $("#keys").val();
+          var collection = $("#collection").val();
+          var jsonString = '{"keys":"'+keys+'","user":"'+@user+'","collection":"'+collection+'"}'
+          var userUrl = "/search/result"+user
+
+           /*
+           * Put Crawl Request
+           */
+          $.ajax({
+              type: "PUT",
+              url: userUrl, 
+              data: jsonString,
+              contentType: "application/json; charset=utf-8",
+              datatype: "json"
+          });
+          
+          window.location.href = userUrl
+        });
+        
+      });
+
+  %body
+    %h2 Welcome #{@user}!
+      %table{:border => "1"}
+        %tr
+          %th= "Url To Crawl"
+          %th= "Remote Crawler Site"
+          %th= "Is Crawl Done"
+          %th= "Collection"
+        - @userCrawaled.each do |crawled|
+          %tr
+            %td= crawled.urlToCrawl
+            %td= crawled.remoteService
+            %td= crawled.isDone
+            %td= crawled.collection
+    %br
+    %br
+    %form{ :id => "query_form"}
+      %section{ :id => "fields"}
+        %label{ :for => "collection"}Collection: 
+        %input{ :type => "text", :name => "collection", :id => "collection", :maxlength => 60, :size => 60, :required => true}
+        %br
+        %br
+        %label{ :for => "keys"}Query Keys: 
+        %textarea{ :type => "text", :name => "keys", :id => "keys", :row => 2, :cols => 60, :required => true}
+      %section{ :id => "buttons"}
+        %br
+        %br
+        %button{ :type => "button", :id => "Submit"}Submit
